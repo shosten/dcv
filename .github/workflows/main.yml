@@ -1,0 +1,62 @@
+
+on: [push]
+name: sn-empshosten1-github
+run-name: sn-empshosten1-github
+
+jobs:
+  codeql-analysis:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript   # adjust to your language(s)
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          output: results/codeql.sarif
+
+  servicenow-security-results:
+    name: ServiceNow Security Scan Results
+    runs-on: ubuntu-latest
+    needs: codeql-analysis   # runs after CodeQL completes
+    steps:
+      - name: ServiceNow DevOps Security Results
+        uses: ServiceNow/servicenow-devops-security-result@v5.1.0
+        with:
+          instance-url: ${{ secrets.SNOW_INSTANCE }}
+          devops-integration-user-name: ${{ secrets.SNOW_USER }}
+          devops-integration-user-password: ${{ secrets.SNOW_PASSWORD }}
+          tool-id: ${{ secrets.SNOW_TOOL_ID }}
+          context-github: ${{ toJSON(github) }}
+          job-name: codeql-analysis
+    
+  deploy-prod:
+    name: Deploy to production
+    needs: codeql-analysis
+    runs-on: ubuntu-latest
+    steps:
+    - name: ServiceNow DevOps Change Automation
+      uses: ServiceNow/servicenow-devops-change@v6.3.0
+      with:
+        instance-url: ${{ secrets.SNOW_INSTANCE }}
+        devops-integration-user-name: ${{ secrets.SNOW_USER }}
+        devops-integration-user-password: ${{ secrets.SNOW_PASSWORD }}
+        tool-id: ${{ secrets.SNOW_TOOL_ID }}
+        job-name: Deploy to production
+        context-github: ${{ toJSON(github) }}
+        change-request: '{"setCloseCode": true, "attributes": {"u_custom_field": "1", "cmdb_ci": {"name": "AMEA Customer Portal", "sys_class_name": {"name": "Mapped Application Service"}}, "category": "DevOps", "short_description": "Automated Software Deployment using Github!!!", "description": "Automated Software Deployment!!!!"}}'
+          
