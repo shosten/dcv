@@ -1,10 +1,9 @@
-import sqlite3
+import os
 
-def get_user(user_name):
-  conn = sqlite3.connect("users.db")
-  cursor = conn.cursor()
+def run_command(user_input):
+    # Vulnerable: unsanitized user input passed to shell
+    os.system("ls " + user_input)
 
-  query = f"SELECT * FROM users WHERE username = '{user_name}'"
-  cursor.execute(query);
-
-  return cursor.fetchAll()
+if __name__ == "__main__":
+    user_input = input("Enter directory: ")
+    run_command(user_input)
