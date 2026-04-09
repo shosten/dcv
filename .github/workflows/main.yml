@@ -46,7 +46,7 @@ jobs:
     
   deploy-prod:
     name: Deploy to production
-    needs: codeql-analysis
+    needs: servicenow-security-results
     runs-on: ubuntu-latest
     steps:
     - name: ServiceNow DevOps Change Automation
