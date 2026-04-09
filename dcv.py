@@ -1,15 +1,9 @@
-import os
+import subprocess
 
-password = "some_password"
-
-def execute(user_input):
-    eval(user_input)
-
-def run_command(user_input):
-    # Vulnerable: unsanitized user input passed to shell
-    os.system("ls " + user_input)
+def run(user_input):
+    # CodeQL usually flags this as command injection
+    subprocess.run("echo " + user_input, shell=True)
 
 if __name__ == "__main__":
-    user_input = input("Enter directory: ")
-    run_command(user_input)
-    execute(user_input)
+    data = input("Enter something: ")
+    run(data)
