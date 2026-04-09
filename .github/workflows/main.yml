@@ -43,6 +43,11 @@ jobs:
           tool-id: ${{ secrets.SNOW_TOOL_ID }}
           context-github: ${{ toJSON(github) }}
           job-name: codeql-analysis
+          security-result-attributes: >
+            {
+              "scanner": "CodeQL",
+              "securityToolId": "e45884df9708c3505da114900153af9d"
+            }
     
   deploy-prod:
     name: Deploy to production
