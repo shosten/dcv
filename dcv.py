@@ -1,5 +1,7 @@
 import os
 
+password = "some_password"
+
 def execute(user_input):
     eval(user_input)
 
