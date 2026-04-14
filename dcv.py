@@ -3,6 +3,7 @@ import flask
 from flask import request
 
 app = flask.Flask(__name__)
+app.run(debug=True)
 password = "some_password"
 
 @app.route("/")
