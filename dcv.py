@@ -3,6 +3,7 @@ import flask
 from flask import request
 
 app = flask.Flask(__name__)
+password = "some_password"
 
 @app.route("/")
 def index():
