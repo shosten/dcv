@@ -30,6 +30,7 @@ jobs:
           output: results/codeql.sarif
   servicenow-push-test-results:
     runs-on: ubuntu-latest
+    needs: codeql-analysis
     name: ServiceNow Test Results
     steps:
     - name: ServiceNow DevOps Unit Test Results
