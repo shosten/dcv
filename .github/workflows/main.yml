@@ -27,12 +27,26 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          output: results/codeql.sarif
+          output: sarif-results
+      - name: Upload SARIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-sarif
+          path: sarif-results
   servicenow-push-test-results:
     runs-on: ubuntu-latest
     needs: codeql-analysis
     name: ServiceNow Test Results
     steps:
+    - name: Download SARIF
+      uses: actions/download-artifact@v4
+      with:
+        name: codeql-sarif
+        path: sarif-results
+
+    - name: Use SARIF
+      run: |
+        ls -R sarif-results
     - name: ServiceNow DevOps Unit Test Results
       uses: ServiceNow/servicenow-devops-test-report@v6.0.0
       with:
@@ -49,7 +63,7 @@ jobs:
         # Github Context
         context-github: ${{ toJSON(github) }}
         # JUnit xml report file name with path
-        xml-report-filename: results/codeql.sarif
+        xml-report-filename: sarif-results
   deploy-prod:
     name: Deploy to production
     needs: servicenow-push-test-results
