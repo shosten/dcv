@@ -28,30 +28,30 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           output: results/codeql.sarif
-
-  servicenow-security-results:
-    name: ServiceNow Security Scan Results
+  servicenow-push-test-results:
     runs-on: ubuntu-latest
-    needs: codeql-analysis   # runs after CodeQL completes
+    name: ServiceNow Test Results
     steps:
-      - name: ServiceNow DevOps Security Results
-        uses: ServiceNow/servicenow-devops-security-result@v5.1.0
-        with:
-          instance-url: ${{ secrets.SNOW_INSTANCE }}
-          devops-integration-user-name: ${{ secrets.SNOW_USER }}
-          devops-integration-user-password: ${{ secrets.SNOW_PASSWORD }}
-          tool-id: ${{ secrets.SNOW_TOOL_ID }}
-          context-github: ${{ toJSON(github) }}
-          job-name: codeql-analysis
-          security-result-attributes: >
-            {
-              "scanner": "CodeQL",
-              "securityToolId": "e45884df9708c3505da114900153af9d"
-            }
-    
+    - name: ServiceNow DevOps Unit Test Results
+      uses: ServiceNow/servicenow-devops-test-report@v6.0.0
+      with:
+        # Devops Integration User Name
+        devops-integration-user-name: ${{ secrets.SNOW_USER }}
+        # Devops Integration User Password
+        devops-integration-user-password: ${{ secrets.SNOW_PASSWORD }}
+        # ServiceNow Instance Name
+        instance-url: ${{ secrets.SNOW_INSTANCE }}
+        # Orchestration Tool Id
+        tool-id: ${{ secrets.SNOW_TOOL_ID }}
+        # Job Name
+        job-name: codeql-analysis
+        # Github Context
+        context-github: ${{ toJSON(github) }}
+        # JUnit xml report file name with path
+        xml-report-filename: results/codeql.sarif
   deploy-prod:
     name: Deploy to production
-    needs: servicenow-security-results
+    needs: servicenow-push-test-results
     runs-on: ubuntu-latest
     steps:
     - name: ServiceNow DevOps Change Automation
