@@ -63,7 +63,7 @@ jobs:
         # Github Context
         context-github: ${{ toJSON(github) }}
         # JUnit xml report file name with path
-        xml-report-filename: codeql-sarif
+        xml-report-filename: sarif-results
   deploy-prod:
     name: Deploy to production
     needs: servicenow-push-test-results
