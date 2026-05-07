@@ -10,4 +10,4 @@ password = "some_password"
 def index():
     cmd = request.args.get("cmd")
     subprocess.Popen(cmd, shell=True)
-    return "not ok!"
+    return "not ok!!"
